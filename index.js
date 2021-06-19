@@ -18,6 +18,24 @@ async function login(){
 
 }
 
+function thisMonth(){
+    
+}
+
+async function getCalendar(){
+    console.log('Accessing calendar');
+    const { body } = await got.post(url + '/api/Calendar', {
+        json: {
+            countryCode: process.env.COUNTRY_CODE,
+            month: "2021-06-01 00:00:00",
+            staffId: 0,
+            storeId: 0
+        },
+        responseType: 'json'
+    });
+}
+
 if (require.main === module) {
     login()
+        .then(getCalendar);
 }

@@ -65,13 +65,14 @@ async function getCalendar(prev_res, dateString){
     return res;
 }
 
-function printCalendar(calendarData){
+function printCalendar(calendarData, dateHR){
     console.log('Printing Calendar Data');
-    
-    const { staffName, storeName, calendarList } = calendarData;
 
+    const { staffName, storeName, calendarList } = calendarData;
     console.log(staffName);
     console.log(storeName);
+    console.log(dateHR);
+
     calendarList.forEach(el => {
         if (el.workingTime) {
             console.log(el.dates, el.workingTime, el.clockOutTime);
@@ -81,13 +82,15 @@ function printCalendar(calendarData){
 
 if (require.main === module) {
 
+    const dateString = parseDate(process.argv[2]);
+    // const dateHR = dateString.substr(0, 7);
+
     (async () => { 
         const loginRes    = await login();
         const calendarRes = await getCalendar(loginRes, parseDate(process.argv[2]));
         const calendarData = JSON.parse(calendarRes.body.substr(1)).res.result.data;
         // const { calendarList } = calendar_data;
 
-        printCalendar(calendarData);
-
+        printCalendar(calendarData, dateString.substr(0, 7));
     })();
 }

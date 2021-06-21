@@ -13,6 +13,7 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "got": "^11.8.2",
+    "ics": "^2.29.0",
     "tough-cookie": "^4.0.0"
   }
 }

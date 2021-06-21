@@ -1,8 +1,9 @@
 require('dotenv').config()
 const got = require('got');
 const { CookieJar } = require('tough-cookie');
-const url = process.env.ENDPOINT;
+const ics = require('ics');
 
+const url = process.env.ENDPOINT;
 const cookieJar = new CookieJar();
 
 async function login(){
@@ -19,11 +20,41 @@ async function login(){
     return res;
 }
 
-async function getCalendar(prev_res){
+function parseDate(str){
+    try {
+        const dateArr = str.split('-');
+        const [seg0, seg1] = dateArr;
+        switch (dateArr.length){
+            case 1: {
+                const monthTwoDigits = ('0' + seg0).substr(-2);
+                return new Date().toISOString().substr(0, 5) + monthTwoDigits + '-01 00:00:00'; 
+                break;
+            }
+            case 2: {
+                const monthTwoDigits = ('0' + seg1).substr(-2);
+                return seg0 + '-' + monthTwoDigits + '-01 00:00:00';
+                break;
+            }
+            case 3: {
+                const monthTwoDigits = ('0' + seg1).substr(-2);
+                return seg0 + '-' + monthTwoDigits + '-01 00:00:00';
+                break;
+            }
+            default:
+                throw new Error('Unhandled number of segments in date parsing');
+        }
+
+    } catch (err) {
+        console.log(err);
+        return new Date().toISOString().substr(0, 8) + '01 00:00:00';
+    }
+}
+
+async function getCalendar(prev_res, dateString){
     console.log('Accessing calendar');
     const payload = {
             countryCode: process.env.COUNTRY_CODE,
-            month: new Date().toISOString().substr(0, 8) + '01 00:00:00',
+            month: dateString,
             staffId: prev_res.body.result.data.staffId,
             storeId: prev_res.body.result.data.storeId
     }
@@ -34,11 +65,29 @@ async function getCalendar(prev_res){
     return res;
 }
 
+function printCalendar(calendarData){
+    console.log('Printing Calendar Data');
+    
+    const { staffName, storeName, calendarList } = calendarData;
+
+    console.log(staffName);
+    console.log(storeName);
+    calendarList.forEach(el => {
+        if (el.workingTime) {
+            console.log(el.dates, el.workingTime, el.clockOutTime);
+        }
+    });
+}
+
 if (require.main === module) {
+
     (async () => { 
-        const login_res    = await login();
-        const calendar_res = await getCalendar(login_res);
-        const calendar_data = JSON.parse(calendar_res.body.substr(1)).res.result.data;
-        console.log(calendar_data);
+        const loginRes    = await login();
+        const calendarRes = await getCalendar(loginRes, parseDate(process.argv[2]));
+        const calendarData = JSON.parse(calendarRes.body.substr(1)).res.result.data;
+        // const { calendarList } = calendar_data;
+
+        printCalendar(calendarData);
+
     })();
 }

@@ -136,7 +136,7 @@ function generateICS(calendarData){
         if (err) {
             console.log(err);
         } else {
-            writeFileSync(`${__dirname}/scraped_calendar.ics`, value)
+            writeFileSync(`${__dirname}/../out/scraped_calendar.ics`, value)
         }
     });
 }

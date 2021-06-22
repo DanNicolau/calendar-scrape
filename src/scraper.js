@@ -84,6 +84,39 @@ function printCalendar(calendarData, dateHR){
     });
 }
 
+function getFormattedCalendarString(calendarData, dateHR){
+    let str = '';
+    str += 'Printing Calendar Data\n';
+
+    const { staffName, storeName, calendarList } = calendarData;
+    str += staffName + '\n';
+    str += storeName + '\n';
+    str += dateHR + '\n';
+
+    calendarList.forEach(el => {
+        if (el.workingTime) {
+            str += el.dates + ' ' + el.workingTime.split('T')[1] + ' ' + el.clockOutTime.split('T')[1] + ' ' + el.workSegmentCode + '\n';
+        }
+    });
+
+    return str;
+}
+
+function getCalendarString(){
+    console.log('Printing Calendar Data');
+
+    const { staffName, storeName, calendarList } = calendarData;
+    console.log(staffName);
+    console.log(storeName);
+    console.log(dateHR);
+
+    calendarList.forEach(el => {
+        if (el.workingTime) {
+            console.log(el.dates, el.workingTime.split('T')[1], el.clockOutTime.split('T')[1], el.workSegmentCode);
+        }
+    });
+}
+
 function getTitle(el){
     switch (el.workSegmentCode) {
         case 'D01':
@@ -146,5 +179,6 @@ module.exports = {
     printCalendar,
     getCalendar,
     generateICS,
-    generateRequestDate
+    generateRequestDate,
+    getFormattedCalendarString
 }

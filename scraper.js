@@ -176,9 +176,19 @@ function generateICS(calendarData){
 
 module.exports = {
     login,
-    printCalendar,
-    getCalendar,
-    generateICS,
-    generateRequestDate,
-    getFormattedCalendarString
+    scrapeCalendar,
+    formattedCalendarString,
+    writeICSsync,
+    writeICS
 }
+
+// module.exports = {
+//     login,
+//     printCalendar,
+//     getCalendar,
+//     generateICS,
+//     generateRequestDate,
+//     getFormattedCalendarString
+// }
+
+

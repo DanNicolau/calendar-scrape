@@ -1,20 +1,29 @@
 {
-  "name": "calendar-scrape",
+  "name": "@dnicolau/fastretailing-calendar",
   "version": "1.0.0",
-  "description": "",
+  "description": "A web-scraper to get, format, and create .ics files with calendar data.",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Dan Nicolau",
+  "license": "UNLICENSED",
   "dependencies": {
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "got": "^11.8.2",
     "ics": "^2.29.0",
     "tough-cookie": "^4.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanNicolau/calendar-scrape.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DanNicolau/calendar-scrape/issues"
+  },
+  "homepage": "https://github.com/DanNicolau/calendar-scrape#readme"
 }

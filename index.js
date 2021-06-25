@@ -26,6 +26,9 @@ async function login(employeeNumber, password, baseURL='https://wps.fastretailin
 }
 
 async function scrapeCalendar(yearMonthStr, countryCode='CA'){
+    if (!yearMonthStr) {
+        yearMonthStr = new Date().toISOString().split('-').slice(0,2).join('-')
+    }
     const fom = firstOfMonth(yearMonthStr);
     const payload = {
         countryCode: countryCode,

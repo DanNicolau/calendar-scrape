@@ -45,7 +45,7 @@ async function scrapeCalendar(yearMonthStr, countryCode='CA'){
 }
 
 function calculateICSStart(el){
-    const [yearStr, monthStr] = generateRequestDate(process.argv[2]).split('-').slice(0, 2); 
+    const [yearStr, monthStr] = calendarLocalStorage.calendarReq.yearMonthStr.split('-'); 
     const year = parseInt(yearStr);
     const month = parseInt(monthStr);
     const date = el.dates;
@@ -107,11 +107,3 @@ module.exports = {
     calendarString,
     writeICSSync,
 };
-
-( async () => {
-    await login(967339, 3711);
-    // console.log(firstOfMonth('2020-9'));
-    await scrapeCalendar('2020-09');
-    console.log(calendarString());
-    writeICSSync('./test.ics')
-})();

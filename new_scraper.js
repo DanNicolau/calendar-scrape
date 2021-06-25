@@ -26,9 +26,10 @@ async function login(employeeNumber, password, baseURL='https://wps.fastretailin
 }
 
 async function scrapeCalendar(yearMonthStr, countryCode='CA'){
+    const fom = firstOfMonth(yearMonthStr);
     const payload = {
         countryCode: countryCode,
-        month: firstOfMonth(yearMonthStr),
+        month: fom,
         staffId: calendarLocalStorage.loginRes.staffId,
         storeID: calendarLocalStorage.loginRes.storeId
     }
@@ -38,19 +39,66 @@ async function scrapeCalendar(yearMonthStr, countryCode='CA'){
     });
     const data = JSON.parse(body.substr(1)).res.result.data;
     calendarLocalStorage.calendarRes = { ...data };
-    console.log(calendarLocalStorage);
+    calendarLocalStorage.calendarReq = {
+        yearMonthStr: fom.substr(0, 7)
+    };
 }
 
-async function writeICS(){
-    
+function calculateICSStart(el){
+    const [yearStr, monthStr] = generateRequestDate(process.argv[2]).split('-').slice(0, 2); 
+    const year = parseInt(yearStr);
+    const month = parseInt(monthStr);
+    const date = el.dates;
+    const [hourStr, minuteStr] = el.workingTime.split('T')[1].split(':');
+    const hour = parseInt(hourStr);
+    const minute = parseInt(minuteStr);
+    return [year, month, date, hour, minute]; 
 }
 
-function writeICSSync(){
+function calculateDuration(el){
+    const startTime = Date.parse(el.workingTime);
+    const endTime = Date.parse(el.clockOutTime);
+    const totalMinutes = (endTime - startTime) / 1000 / 60;
+    const minutes = totalMinutes % 60;
+    const hours = (totalMinutes - minutes) / 60;
+    return { hours, minutes };
+}
 
+function writeICSSync(destination){
+    const events = [];
+    calendarLocalStorage.calendarRes.calendarList.forEach( el => {
+        if (el.workingTime) {
+            events.push({
+                title: el.workSegmentCode,
+                start: calculateICSStart(el),
+                duration: calculateDuration(el)
+            });
+        }
+    });
+
+    ics.createEvents(events, (err, value) => {
+        if (!err) {
+            console.log('Writing file');
+            writeFileSync(destination, value)
+        }
+    });
 }
 
 function calendarString(){
+    let str = '';
 
+    const { staffName, storeName, calendarList } = calendarLocalStorage.calendarRes;
+    str += staffName + '\n';
+    str += storeName + '\n';
+    str += calendarLocalStorage.calendarReq.yearMonthStr + '\n';
+
+    calendarList.forEach(el => {
+        if (el.workingTime) {
+            str += el.dates + ' ' + el.workingTime.split('T')[1] + ' ' + el.clockOutTime.split('T')[1] + ' ' + el.workSegmentCode + '\n';
+        }
+    });
+
+    return str;
 }
 
 module.exports = {
@@ -58,11 +106,12 @@ module.exports = {
     scrapeCalendar,
     calendarString,
     writeICSSync,
-    writeICS
 };
 
 ( async () => {
     await login(967339, 3711);
     // console.log(firstOfMonth('2020-9'));
     await scrapeCalendar('2020-09');
+    console.log(calendarString());
+    writeICSSync('./test.ics')
 })();

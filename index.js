@@ -81,7 +81,6 @@ function writeICSSync(destination){
 
     ics.createEvents(events, (err, value) => {
         if (!err) {
-            console.log('Writing file');
             writeFileSync(destination, value)
         }
     });
